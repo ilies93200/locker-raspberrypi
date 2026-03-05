@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de bord Livreur</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <div>
+                <h1>🚚 Tableau de bord Livreur</h1>
+                <p class="subtitle" id="welcomeMessage"></p>
+            </div>
+            <button onclick="deconnexion()" class="btn btn-danger">Déconnexion</button>
+        </div>
+        
+        <div id="alert" style="display: none;"></div>
+        
+        <div class="cards">
+            <div class="card">
+                <h2>📋 Commandes Disponibles</h2>
+                <p style="color: #666; margin-bottom: 20px;">
+                    Commandes à récupérer chez les commerçants
+                </p>
+                <div id="commandesDisponibles"></div>
+            </div>
+            
+            <div class="card">
+                <h2>📦 Mes Commandes Récupérées</h2>
+                <p style="color: #666; margin-bottom: 20px;">
+                    Commandes à déposer dans le casier
+                </p>
+                <div id="commandesRecuperees"></div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="/" class="btn btn-primary">Retour à l'accueil</a>
+        </div>
+    </div>
+    
+    <script src="/static/js/livreur-dashboard.js"></script>
+</body>
+</html>

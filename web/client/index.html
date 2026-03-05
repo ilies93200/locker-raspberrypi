@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Récupérer mon colis</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="kiosk">
+        <div class="kiosk-card">
+            <h1>📦 Récupérer mon colis</h1>
+            
+            <div id="alert" style="display: none;"></div>
+            
+            <form id="retraitForm">
+                <div class="form-group">
+                    <label for="code_commande">Code de commande</label>
+                    <input type="text" id="code_commande" name="code_commande" 
+                           placeholder="CMD-20240312-0042" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="mot_de_passe">Mot de passe</label>
+                    <input type="text" id="mot_de_passe" name="mot_de_passe" 
+                           placeholder="7K3mP9" required>
+                </div>
+                
+                <button type="submit" class="btn btn-success">Ouvrir le casier</button>
+            </form>
+            
+            <p style="text-align: center; margin-top: 30px; color: #666;">
+                Entrez le code de commande et le mot de passe reçus par email
+            </p>
+        </div>
+    </div>
+    
+    <script src="/static/js/client.js"></script>
+</body>
+</html>

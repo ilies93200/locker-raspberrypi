@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interface Commerçant</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>👔 Interface Commerçant</h1>
+        <p class="subtitle">Gestion des livreurs, commandes et casier</p>
+        
+        <div id="alert" style="display: none;"></div>
+        
+        <div class="cards">
+            <div class="card">
+                <h2>👥 Gestion des Livreurs</h2>
+                
+                <form id="livreurForm">
+                    <div class="form-group">
+                        <label for="nom">Nom</label>
+                        <input type="text" id="nom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="prenom">Prénom</label>
+                        <input type="text" id="prenom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="adresse">Adresse</label>
+                        <input type="text" id="adresse">
+                    </div>
+                    <div class="form-group">
+                        <label for="login">Login</label>
+                        <input type="text" id="login" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Mot de passe temporaire</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Créer le livreur</button>
+                </form>
+                
+                <h3 style="margin-top: 30px;">Liste des livreurs</h3>
+                <div id="livreursList"></div>
+            </div>
+            
+            <div class="card">
+                <h2>📦 Gestion des Commandes</h2>
+                
+                <form id="commandeForm">
+                    <div class="form-group">
+                        <label for="email_client">Email du client</label>
+                        <input type="email" id="email_client" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="taille_casier">Taille du casier</label>
+                        <select id="taille_casier" required>
+                            <option value="S">S - Petit</option>
+                            <option value="M" selected>M - Moyen</option>
+                            <option value="L">L - Grand</option>
+                            <option value="XL">XL - Très grand</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="poids">Poids (kg)</label>
+                        <input type="number" id="poids" step="0.1" min="0">
+                    </div>
+                    <button type="submit" class="btn btn-success">Créer la commande</button>
+                </form>
+                
+                <h3 style="margin-top: 30px;">Liste des commandes</h3>
+                <div id="commandesList"></div>
+            </div>
+            
+            <div class="card">
+                <h2>🔐 État du Casier</h2>
+                <div id="casierEtat"></div>
+                <button onclick="rafraichirCasier()" class="btn btn-info" style="margin-top: 20px;">
+                    Rafraîchir
+                </button>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="/" class="btn btn-primary">Retour à l'accueil</a>
+        </div>
+    </div>
+    
+    <script src="/static/js/commercant.js"></script>
+</body>
+</html>
