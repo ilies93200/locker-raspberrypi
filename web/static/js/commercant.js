@@ -139,8 +139,10 @@ async function chargerCommandes() {
                     <tr>
                         <th>Email Client</th>
                         <th>Taille</th>
+                        <th>Livreur</th>
                         <th>Statut</th>
-                        <th>Code</th>
+                        <th>Code Commande</th>
+                        <th>Mot de Passe</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -149,12 +151,19 @@ async function chargerCommandes() {
                         <tr>
                             <td>${c.email_client}</td>
                             <td>${c.taille_casier}</td>
+                            <td>${c.livreur ? `${c.livreur.prenom} ${c.livreur.nom}` : '-'}</td>
                             <td><span class="badge badge-${getStatutClass(c.statut)}">${c.statut}</span></td>
-                            <td>${c.code_commande || '-'}</td>
+                            <td><strong>${c.code_commande || '-'}</strong></td>
+                            <td><strong>${c.mot_de_passe_client || '-'}</strong></td>
                             <td>
                                 ${c.statut === 'créée' ? `
                                     <button onclick="certifierCommande(${c.id})" class="btn btn-success">
                                         Certifier
+                                    </button>
+                                ` : ''}
+                                ${c.statut === 'déposée' ? `
+                                    <button onclick="afficherInfosRetrait(${c.id})" class="btn btn-info">
+                                        Infos Retrait
                                     </button>
                                 ` : ''}
                                 ${c.statut !== 'récupérée_par_client' ? `
@@ -256,6 +265,28 @@ async function rafraichirCasier() {
 chargerLivreurs();
 chargerCommandes();
 rafraichirCasier();
+
+async function afficherInfosRetrait(id) {
+    try {
+        const response = await fetch(`/api/commandes/${id}`);
+        const commande = await response.json();
+        
+        const message = `
+📦 INFORMATIONS DE RETRAIT
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+👤 Client: ${commande.email_client}
+🔑 Code Commande: ${commande.code_commande}
+🔐 Mot de Passe: ${commande.mot_de_passe_client}
+
+📱 À communiquer au client pour le retrait
+        `;
+        
+        alert(message);
+    } catch (error) {
+        showAlert('❌ Erreur lors de la récupération des infos', 'error');
+    }
+}
 
 setInterval(() => {
     chargerCommandes();

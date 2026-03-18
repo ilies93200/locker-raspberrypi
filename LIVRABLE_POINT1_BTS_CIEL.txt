@@ -1,0 +1,339 @@
+================================================================================
+                    BTS CIEL - Projet de Fin de Cursus
+                    Trame de Preparation - Point n°1
+================================================================================
+
+Date du point : 19 fevrier 2025
+Phase : Demarrage (19/02/25 -> 19/03/25)
+Livrable attendu pour le 19 fevrier 2025
+
+================================================================================
+1. PRESENTATION DU PROJET
+================================================================================
+
+INTITULE DU PROJET
+------------------
+Systeme de Casier Intelligent Connecte pour Commerce de Proximite
+
+CONTEXTE
+--------
+Les commercants d'un centre-ville pieton souhaitent offrir un service de 
+retrait de commandes en dehors des horaires d'ouverture. Les clients 
+commandent en ligne ou en boutique, et peuvent recuperer leurs achats 24h/24 
+via un casier intelligent securise.
+
+Problematique : Comment permettre aux clients de recuperer leurs commandes 
+de maniere autonome et securisee ?
+
+Besoin resolu :
+- Flexibilite horaire pour les clients (retrait 24h/24)
+- Reduction de la charge de travail pour les commercants
+- Optimisation de la logistique de livraison
+- Tracabilite complete des operations
+
+OBJECTIFS PRINCIPAUX
+--------------------
+1. Controle physique du casier : Systeme d'ouverture/fermeture automatique 
+   via electroaimant 12V controle par Raspberry Pi
+
+2. Gestion multi-utilisateurs : Interfaces web distinctes pour commercants, 
+   livreurs et clients
+
+3. Securite et tracabilite : Authentification JWT, codes uniques par 
+   commande, logs complets
+
+PERIMETRE DU PROJET
+-------------------
+Inclus :
+- Backend API REST (Flask/Python)
+- Base de donnees SQLite locale
+- Controle GPIO pour 1 casier (extensible a 4)
+- 3 interfaces web (commercant, livreur, client)
+- Systeme de notifications email
+- Authentification securisee (JWT + bcrypt)
+- Documentation technique complete
+
+Exclus :
+- Application mobile native (remplacee par web app)
+- Hebergement cloud (systeme 100% local)
+- Systeme de paiement en ligne
+- Reconnaissance faciale
+
+================================================================================
+2. EQUIPE ET ORGANISATION
+================================================================================
+
+COMPOSITION DE L'EQUIPE
+-----------------------
+Membre          | Role Principal              | Responsabilites
+----------------|-----------------------------|---------------------------------
+Etudiant 1      | Developpeur Backend +       | - API Flask REST
+                | Hardware                    | - Controle GPIO Raspberry Pi
+                |                             | - Gestion base de donnees
+                |                             | - Integration electroaimant
+----------------|-----------------------------|---------------------------------
+Etudiant 2      | Developpeur Frontend        | - Interface commercant
+                |                             | - Interface livreur
+                |                             | - Interface client (kiosk)
+                |                             | - Design UI/UX
+----------------|-----------------------------|---------------------------------
+Etudiant 3      | Integrateur Systeme         | - Configuration Raspberry Pi
+                |                             | - Tests d'integration
+                |                             | - Documentation
+                |                             | - Cablage electronique
+
+REPARTITION DES TACHES
+----------------------
+Backend (Etudiant 1) :
+- Modeles de donnees (Livreur, Commande, Casier, Commercant)
+- Routes API REST (auth, commandes, casiers, client)
+- Controleur GPIO (ouverture/fermeture casier)
+- Systeme d'envoi d'emails (SMTP)
+
+Frontend (Etudiant 2) :
+- Interface commercant (gestion livreurs + commandes)
+- Interface livreur (authentification + depot)
+- Interface client kiosk (retrait avec code)
+- Styles CSS et responsive design
+
+Integration (Etudiant 3) :
+- Installation et configuration Raspberry Pi
+- Cablage GPIO + relais + electroaimant
+- Tests fonctionnels bout-en-bout
+- Redaction guides d'installation et utilisation
+
+OUTILS DE COLLABORATION
+-----------------------
+- Git/GitHub : Versioning du code 
+  (https://github.com/ilies93200/locker-raspberrypi)
+- Discord : Communication quotidienne
+- Trello : Suivi des taches et planning
+- Google Drive : Documentation partagee
+
+================================================================================
+3. ANALYSE TECHNIQUE PRELIMINAIRE
+================================================================================
+
+TECHNOLOGIES ENVISAGEES
+-----------------------
+
+Backend :
+---------
+Langage : Python 3.11+
+Justification : Excellent support GPIO sur Raspberry Pi, bibliotheques 
+riches (Flask, SQLAlchemy), syntaxe claire
+
+Framework : Flask 3.0
+Justification : Leger, flexible, parfait pour API REST, documentation complete
+
+Base de donnees : SQLite
+Justification : Embarquee, sans serveur, suffisante pour usage local, 
+facile a sauvegarder
+
+Frontend :
+----------
+Technologies : HTML5, CSS3, JavaScript Vanilla
+Justification : Pas de dependances lourdes, compatible tous navigateurs, 
+performance optimale
+
+Frameworks CSS : TailwindCSS (optionnel)
+Justification : Design moderne rapide, responsive natif
+
+Hardware :
+----------
+Plateforme : Raspberry Pi 4 Model B
+Justification : GPIO integre, puissance suffisante pour serveur web, 
+Linux natif
+
+Controle : RPi.GPIO / lgpio
+Justification : Bibliotheque standard pour controle GPIO
+
+Electronique : Module relais 5V + Electroaimant 12V
+Justification : Isolation electrique, securite, fiabilite
+
+Securite :
+----------
+Authentification : JWT (JSON Web Tokens)
+Justification : Stateless, securise, standard industrie
+
+Hachage : bcrypt
+Justification : Algorithme robuste contre brute-force
+
+HTTPS : Certificat auto-signe (optionnel)
+Justification : Chiffrement des communications
+
+ARCHITECTURE PRESSENTIE
+-----------------------
+
++-------------------------------------------------------------+
+|                    RASPBERRY PI 4                           |
+|  +------------------------------------------------------+   |
+|  |              SERVEUR WEB FLASK                       |   |
+|  |  +------------+  +------------+  +------------+     |   |
+|  |  |   Routes   |  |   Models   |  |   Utils    |     |   |
+|  |  |    API     |  | SQLAlchemy |  | GPIO/Email |     |   |
+|  |  +------------+  +------------+  +------------+     |   |
+|  +------------------------------------------------------+   |
+|  +------------------------------------------------------+   |
+|  |           BASE DE DONNEES SQLite                     |   |
+|  |  [Livreurs] [Commandes] [Casiers] [Commercants]     |   |
+|  +------------------------------------------------------+   |
+|  +------------------------------------------------------+   |
+|  |              CONTROLE GPIO                           |   |
+|  |  GPIO 17 -> Relais 5V -> Electroaimant 12V          |   |
+|  +------------------------------------------------------+   |
++-------------------------------------------------------------+
+                          | HTTP (port 5000)
+                          v
++-------------------------------------------------------------+
+|                  INTERFACES WEB (Navigateur)                |
+|  +--------------+  +--------------+  +--------------+      |
+|  |  Commercant  |  |   Livreur    |  |    Client    |      |
+|  |   (Admin)    |  | (Auth JWT)   |  |   (Kiosk)    |      |
+|  +--------------+  +--------------+  +--------------+      |
++-------------------------------------------------------------+
+
+Schema simplifie Client/Serveur :
+- Serveur : Raspberry Pi (192.168.1.116:5000)
+- Clients : Navigateurs web sur reseau local
+- Communication : HTTP/JSON (API REST)
+- Stockage : SQLite local (instance/locker.db)
+
+CONTRAINTES IDENTIFIEES
+-----------------------
+Materielles :
+- Alimentation stable 12V/2A pour electroaimant
+- Dissipation thermique du relais
+- Cablage securise (isolation electrique)
+
+Logicielles :
+- Compatibilite RPi.GPIO avec Raspberry Pi 5 (migration vers lgpio si 
+  necessaire)
+- Gestion concurrence (plusieurs utilisateurs simultanes)
+- Timeout reseau (connexion SMTP Gmail)
+
+Temps :
+- Delai serre (1 mois jusqu'a Revue 1)
+- Tests materiels necessitant le Raspberry Pi physique
+- Apprentissage Flask/SQLAlchemy pour certains membres
+
+================================================================================
+4. PLANIFICATION
+================================================================================
+
+DECOUPAGE EN GRANDES PHASES
+----------------------------
+Phase           | Periode        | Objectifs              | Livrables
+----------------|----------------|------------------------|-------------------
+Phase 1 :       | 19/02 - 26/02  | Setup environnement,   | Repo Git, schema
+Demarrage       |                | architecture           | BDD, maquettes
+----------------|----------------|------------------------|-------------------
+Phase 2 :       | 27/02 - 12/03  | Code backend +         | API fonctionnelle,
+Developpement   |                | frontend               | interfaces web
+----------------|----------------|------------------------|-------------------
+Phase 3 :       | 13/03 - 19/03  | Tests hardware,        | Systeme complet
+Integration     |                | deploiement            | operationnel
+----------------|----------------|------------------------|-------------------
+Phase 4 :       | 20/03 - 19/04  | Documentation,         | Livrable final
+Finalisation    |                | optimisations          | pour Revue 1
+
+LIVRABLES ATTENDUS POUR LA REVUE 1 (19/03/25)
+----------------------------------------------
+1. [OK] Code source complet (GitHub)
+2. [OK] Base de donnees fonctionnelle (SQLite avec donnees de test)
+3. [OK] API REST operationnelle (15 endpoints documentes)
+4. [OK] 3 interfaces web (commercant, livreur, client)
+5. [OK] Controle GPIO fonctionnel (ouverture/fermeture casier)
+6. [OK] Documentation technique (README, guide installation, guide prof)
+7. [OK] Maquette physique (Raspberry Pi + relais + electroaimant)
+8. [  ] Presentation PowerPoint (10-15 slides)
+9. [  ] Video demo (3-5 minutes)
+
+RISQUES IDENTIFIES
+------------------
+Risque                           | Probabilite | Impact | Mitigation
+---------------------------------|-------------|--------|-------------------
+Incompatibilite GPIO             | Moyenne     | Eleve  | Prevoir migration
+Raspberry Pi 5                   |             |        | vers lgpio, tester
+                                 |             |        | tot
+---------------------------------|-------------|--------|-------------------
+Delai livraison materiel         | Faible      | Eleve  | Commander
+                                 |             |        | immediatement, mode
+                                 |             |        | simulation
+---------------------------------|-------------|--------|-------------------
+Blocage SMTP Gmail               | Elevee      | Moyen  | Utiliser mot de
+                                 |             |        | passe application,
+                                 |             |        | alternative Mailgun
+---------------------------------|-------------|--------|-------------------
+Surcharge planning               | Moyenne     | Moyen  | Prioriser
+                                 |             |        | fonctionnalites
+                                 |             |        | core
+---------------------------------|-------------|--------|-------------------
+Bugs concurrence BDD             | Moyenne     | Moyen  | Tests unitaires,
+                                 |             |        | gestion transactions
+---------------------------------|-------------|--------|-------------------
+Manque competences Flask         | Faible      | Faible | Tutoriels en ligne,
+                                 |             |        | pair programming
+
+PLANNING PREVISIONNEL AVEC JALONS
+----------------------------------
+
+Semaine 1 (19/02 - 26/02) :
+- [OK] Creation repo GitHub
+- [OK] Schema base de donnees (schema.sql)
+- [OK] Modeles SQLAlchemy (models.py)
+- [OK] Structure projet complete
+JALON 1 : Architecture validee
+
+Semaine 2 (27/02 - 05/03) :
+- [OK] Routes API REST (auth, commandes, casiers)
+- [OK] Controleur GPIO (gpio_controller.py)
+- [OK] Interface commercant (HTML/CSS/JS)
+JALON 2 : Backend fonctionnel
+
+Semaine 3 (06/03 - 12/03) :
+- [OK] Interface livreur (login + dashboard)
+- [OK] Interface client kiosk
+- [OK] Systeme d'envoi emails
+JALON 3 : Frontend complet
+
+Semaine 4 (13/03 - 19/03) :
+- [OK] Installation Raspberry Pi
+- [OK] Cablage electronique
+- [OK] Tests d'integration bout-en-bout
+- [OK] Documentation finale
+JALON 4 : REVUE 1 (19/03/25)
+
+================================================================================
+5. CONCLUSION
+================================================================================
+
+Ce projet de casier intelligent connecte repond a un besoin reel des 
+commercants de proximite tout en permettant de mettre en pratique les 
+competences acquises en BTS CIEL :
+
+- Developpement logiciel : API REST, bases de donnees, interfaces web
+- Systemes embarques : Raspberry Pi, controle GPIO, electronique
+- Gestion de projet : Planning, travail d'equipe, documentation
+
+L'architecture technique choisie (Flask + SQLite + Raspberry Pi) est adaptee 
+au contexte local et permet une realisation dans les delais impartis.
+
+Etat actuel (05/03/26) : Le projet est OPERATIONNEL avec toutes les 
+fonctionnalites core implementees. Le systeme est deploye sur le Raspberry Pi 
+(192.168.1.116) et accessible sur le reseau local.
+
+================================================================================
+SIGNATURES
+================================================================================
+
+Role                    | Nom        | Date       | Signature
+------------------------|------------|------------|---------------------------
+Chef de projet          | [Nom]      | 19/02/2025 |
+Developpeur Backend     | [Nom]      | 19/02/2025 |
+Developpeur Frontend    | [Nom]      | 19/02/2025 |
+
+================================================================================
+Document genere le 18/03/2026
+Version 1.0 - Livrable Point n°1
+================================================================================

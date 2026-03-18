@@ -38,12 +38,70 @@ sudo apt install python3 python3-pip python3-venv -y
 python3 -m venv venv
 source venv/bin/activate
 
-# Installation packages Python
+# 5. Installer les dépendances Python
+pip install --upgrade pip
 pip install -r requirements.txt
 
-# Initialisation base de données
-python3 -c "from api.app import app, db; app.app_context().push(); db.create_all()"
+# 6. Initialiser la base de données
+python3 << 'EOF'
+from api.app import app, db
+from api.models import Commercant, Casier
+
+with app.app_context():
+    db.create_all()
+    
+    commercant = Commercant(
+        id=1,
+        nom='Boutique Test',
+        adresse='123 Rue du Centre-Ville',
+        email='boutique@test.fr',
+        telephone='0123456789'
+    )
+    db.session.add(commercant)
+    
+    casier = Casier(
+        id=1,
+        taille='M',
+        etat='libre',
+        gpio_pin=17
+    )
+    db.session.add(casier)
+    
+    db.session.commit()
+    print('Base de données initialisée')
+EOF
+
+# 7. Configurer le service systemd (démarrage automatique)
+sudo cat > /etc/systemd/system/locker.service << 'EOF'
+[Unit]
+Description=Locker API Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/locker-raspberrypi
+Environment=PYTHONPATH=/root/locker-raspberrypi
+ExecStart=/root/locker-raspberrypi/venv/bin/python api/app.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# 8. Activer et démarrer le service
+sudo systemctl daemon-reload
+sudo systemctl enable locker.service
+sudo systemctl start locker.service
+
+# 9. Vérifier que le service fonctionne
+sudo systemctl status locker.service
 ```
+
+Le serveur sera accessible sur http://192.168.1.116:5000
+
+**Note :** Le service démarre automatiquement au démarrage du Raspberry Pi.
 
 ### 3. Configuration Email (optionnel pour les tests)
 
@@ -142,15 +200,30 @@ curl http://192.168.1.116:5000/api/casiers
 ### Test 6 : Ouverture du casier (test GPIO)
 
 ```bash
-curl -X POST http://192.168.1.116:5000/api/casiers/1/ouvrir \
-  -H "Content-Type: application/json" \
-  -d '{"duree": 3}'
+curl -X POST http://192.168.1.116:5000/api/casiers/1/ouvrir
 ```
 
-**Résultat attendu :** 
-- Code 200
-- Message "Casier ouvert pendant 3 secondes"
-- L'électroaimant se désactive pendant 3 secondes (LED du relais change)
+**Résultat attendu :** Le casier s'ouvre pendant 5 secondes
+
+### Commandes Utiles
+
+```bash
+# Voir les logs en temps réel
+sudo journalctl -u locker.service -f
+
+# Redémarrer le service
+sudo systemctl restart locker.service
+
+# Arrêter le service
+sudo systemctl stop locker.service
+
+# Vérifier l'état de la base de données
+cd ~/locker-raspberrypi
+sqlite3 instance/locker.db "SELECT * FROM casier;"
+sqlite3 instance/locker.db "SELECT * FROM commercants;"
+sqlite3 instance/locker.db "SELECT * FROM livreurs;"
+sqlite3 instance/locker.db "SELECT * FROM commandes;"
+```
 
 ## 🔌 Vérification du Câblage GPIO
 

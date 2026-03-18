@@ -108,12 +108,17 @@ def deposer_commande(id):
     
     locker.ouvrir_casier(duree=5)
     
-    envoyer_email_client(commande.email_client, code_commande, mot_de_passe)
+    try:
+        envoyer_email_client(commande.email_client, code_commande, mot_de_passe)
+    except Exception as e:
+        print(f"⚠️ Erreur envoi email (non bloquant): {e}")
     
     db.session.commit()
     
     return jsonify({
-        'message': 'Commande déposée avec succès',
+        'message': f'Commande déposée avec succès. Code: {code_commande}, Mot de passe: {mot_de_passe}',
+        'code_commande': code_commande,
+        'mot_de_passe': mot_de_passe,
         'commande': commande.to_dict()
     }), 200
 

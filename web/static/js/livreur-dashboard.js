@@ -156,7 +156,20 @@ async function deposerCommande(id) {
         const data = await response.json();
         
         if (response.ok) {
-            showAlert('✅ ' + data.message + ' - Le casier est ouvert, déposez le colis !', 'success');
+            const message = `
+✅ Commande déposée avec succès !
+
+🔓 Le casier est ouvert, déposez le colis maintenant.
+
+📋 INFORMATIONS CLIENT :
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔑 Code Commande: ${data.code_commande}
+🔐 Mot de Passe: ${data.mot_de_passe}
+
+💡 Ces informations sont à communiquer au client pour le retrait.
+            `;
+            alert(message);
+            showAlert('✅ Commande déposée avec succès', 'success');
             chargerCommandes();
         } else {
             showAlert('❌ ' + data.error, 'error');
