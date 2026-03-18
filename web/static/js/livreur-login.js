@@ -24,12 +24,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         if (response.ok) {
             localStorage.setItem('token', data.access_token);
             localStorage.setItem('livreur', JSON.stringify(data.livreur));
-            
-            if (data.first_login) {
-                window.location.href = '/livreur/change-password.html';
-            } else {
-                window.location.href = '/livreur/dashboard.html';
-            }
+            window.location.href = '/livreur/dashboard';
         } else {
             showAlert('❌ ' + data.error, 'error');
         }
