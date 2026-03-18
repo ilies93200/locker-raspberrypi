@@ -94,6 +94,8 @@ function afficherCommandesRecuperees(commandes) {
                     <th>Email Client</th>
                     <th>Taille</th>
                     <th>Poids</th>
+                    <th>Code Commande</th>
+                    <th>Mot de Passe</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -103,10 +105,18 @@ function afficherCommandesRecuperees(commandes) {
                         <td>${c.email_client}</td>
                         <td>${c.taille_casier}</td>
                         <td>${c.poids ? c.poids + ' kg' : '-'}</td>
+                        <td><strong>${c.code_commande || '-'}</strong></td>
+                        <td><strong>${c.mot_de_passe_client || '-'}</strong></td>
                         <td>
-                            <button onclick="deposerCommande(${c.id})" class="btn btn-info">
-                                Déposer dans le casier
-                            </button>
+                            ${!c.code_commande ? `
+                                <button onclick="deposerCommande(${c.id})" class="btn btn-info">
+                                    Déposer dans le casier
+                                </button>
+                            ` : `
+                                <button onclick="afficherInfosClient(${c.id})" class="btn btn-success">
+                                    Voir Infos Client
+                                </button>
+                            `}
                         </td>
                     </tr>
                 `).join('')}
@@ -176,6 +186,33 @@ async function deposerCommande(id) {
         }
     } catch (error) {
         showAlert('❌ Erreur de connexion', 'error');
+    }
+}
+
+async function afficherInfosClient(id) {
+    try {
+        const response = await fetch(`/api/commandes/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
+        const commande = await response.json();
+        
+        const message = `
+📦 INFORMATIONS CLIENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+👤 Client: ${commande.email_client}
+🔑 Code Commande: ${commande.code_commande}
+🔐 Mot de Passe: ${commande.mot_de_passe_client}
+
+📱 À communiquer au client pour le retrait
+        `;
+        
+        alert(message);
+    } catch (error) {
+        showAlert('❌ Erreur lors de la récupération des infos', 'error');
     }
 }
 

@@ -122,6 +122,17 @@ def deposer_commande(id):
         'commande': commande.to_dict()
     }), 200
 
+@bp.route('/<int:id>', methods=['GET'])
+@jwt_required()
+def get_commande(id):
+    """Récupérer une commande par son ID"""
+    commande = Commande.query.get(id)
+    
+    if not commande:
+        return jsonify({'error': 'Commande non trouvée'}), 404
+    
+    return jsonify(commande.to_dict()), 200
+
 @bp.route('/<int:id>', methods=['DELETE'])
 def delete_commande(id):
     """Supprimer une commande"""
@@ -147,7 +158,8 @@ def get_commandes_disponibles():
     
     commandes = Commande.query.filter(
         (Commande.statut == 'créée') | 
-        ((Commande.statut == 'récupérée_par_livreur') & (Commande.livreur_id == livreur_id))
+        ((Commande.statut == 'récupérée_par_livreur') & (Commande.livreur_id == livreur_id)) |
+        ((Commande.statut == 'déposée') & (Commande.livreur_id == livreur_id))
     ).all()
     
     return jsonify([c.to_dict() for c in commandes]), 200
