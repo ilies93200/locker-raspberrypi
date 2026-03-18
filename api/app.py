@@ -34,6 +34,14 @@ def commercant():
 def livreur():
     return render_template('livreur/login.html')
 
+@app.route('/livreur/change-password')
+def livreur_change_password():
+    return render_template('livreur/change-password.html')
+
+@app.route('/livreur/dashboard')
+def livreur_dashboard():
+    return render_template('livreur/dashboard.html')
+
 @app.route('/client')
 def client_kiosk():
     return render_template('client/index.html')
