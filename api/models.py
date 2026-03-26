@@ -91,6 +91,7 @@ class Commande(db.Model):
             'commercant': self.commercant.to_dict() if self.commercant else None,
             'livreur': self.livreur.to_dict() if self.livreur else None,
             'code_commande': self.code_commande,
+            'mot_de_passe_client': self.mot_de_passe,
             'statut': self.statut,
             'date_creation': self.date_creation.isoformat() if self.date_creation else None,
             'date_depot': self.date_depot.isoformat() if self.date_depot else None,
