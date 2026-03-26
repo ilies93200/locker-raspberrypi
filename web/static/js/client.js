@@ -14,8 +14,12 @@ function showAlert(message, type) {
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    const code_commande = document.getElementById('code_commande').value.trim();
-    const mot_de_passe = document.getElementById('mot_de_passe').value.trim();
+    const code_retrait = document.getElementById('code_retrait').value.trim().toUpperCase();
+    
+    if (code_retrait.length !== 8) {
+        showAlert('❌ Le code doit contenir 8 caractères', 'error');
+        return;
+    }
     
     try {
         const response = await fetch('/api/client/retirer', {
@@ -23,7 +27,7 @@ form.addEventListener('submit', async (e) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ code_commande, mot_de_passe })
+            body: JSON.stringify({ code_retrait })
         });
         
         const data = await response.json();

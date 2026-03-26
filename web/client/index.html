@@ -15,22 +15,17 @@
             
             <form id="retraitForm">
                 <div class="form-group">
-                    <label for="code_commande">Code de commande</label>
-                    <input type="text" id="code_commande" name="code_commande" 
-                           placeholder="CMD-20240312-0042" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="mot_de_passe">Mot de passe</label>
-                    <input type="text" id="mot_de_passe" name="mot_de_passe" 
-                           placeholder="7K3mP9" required>
+                    <label for="code_retrait">Code de retrait</label>
+                    <input type="text" id="code_retrait" name="code_retrait" 
+                           placeholder="Ex: 3A7B2C9D" required
+                           maxlength="8" style="text-transform: uppercase; font-size: 24px; text-align: center; letter-spacing: 4px;">
                 </div>
                 
                 <button type="submit" class="btn btn-success">Ouvrir le casier</button>
             </form>
             
             <p style="text-align: center; margin-top: 30px; color: #666;">
-                Entrez le code de commande et le mot de passe reçus par email
+                Entrez le code de retrait à 8 caractères (chiffres 0-9 et lettres A-D)
             </p>
         </div>
     </div>

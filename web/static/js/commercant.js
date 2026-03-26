@@ -141,8 +141,7 @@ async function chargerCommandes() {
                         <th>Taille</th>
                         <th>Livreur</th>
                         <th>Statut</th>
-                        <th>Code Commande</th>
-                        <th>Mot de Passe</th>
+                        <th>Code Retrait</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -153,8 +152,7 @@ async function chargerCommandes() {
                             <td>${c.taille_casier}</td>
                             <td>${c.livreur ? `${c.livreur.prenom} ${c.livreur.nom}` : '-'}</td>
                             <td><span class="badge badge-${getStatutClass(c.statut)}">${c.statut}</span></td>
-                            <td><strong>${c.code_commande || '-'}</strong></td>
-                            <td><strong>${c.mot_de_passe_client || '-'}</strong></td>
+                            <td><strong style="font-size: 16px; letter-spacing: 2px;">${c.code_commande || '-'}</strong></td>
                             <td>
                                 ${c.statut === 'créée' ? `
                                     <button onclick="certifierCommande(${c.id})" class="btn btn-success">
@@ -272,14 +270,14 @@ async function afficherInfosRetrait(id) {
         const commande = await response.json();
         
         const message = `
-📦 INFORMATIONS DE RETRAIT
+📦 CODE DE RETRAIT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 👤 Client: ${commande.email_client}
-🔑 Code Commande: ${commande.code_commande}
-🔐 Mot de Passe: ${commande.mot_de_passe_client}
+🔑 Code: ${commande.code_commande}
 
 📱 À communiquer au client pour le retrait
+(8 caractères: chiffres 0-9 et lettres A-D)
         `;
         
         alert(message);

@@ -6,6 +6,20 @@
 
 ---
 
+## ✅ Simplification du Code de Retrait
+
+### NOUVEAU SYSTÈME (SIMPLIFIÉ)
+- **Un seul code de 8 caractères** au lieu de code + mot de passe
+- Caractères utilisés : **0-9 et A-D** (pavé numérique simple)
+- Exemple : `3A7B2C9D`
+
+### Avantages
+- ✅ Plus simple pour le client (un seul code à entrer)
+- ✅ Compatible avec un pavé numérique 0-9 + A-D
+- ✅ 8 caractères = sécurité suffisante (14^8 ≈ 1.4 milliard de combinaisons)
+
+---
+
 ## ✅ Corrections Effectuées
 
 ### 1. Erreur JWT 422 RÉSOLUE
@@ -78,9 +92,9 @@ Client       : http://192.168.1.49:5000/client
 - Commandes que tu as récupérées (statut "récupérée_par_livreur")
 - Tu devrais voir :
 
-| Email Client | Taille | Poids | Code Commande | Mot de Passe | Action |
-|--------------|--------|-------|---------------|--------------|--------|
-| demo@test.com | M | 2kg | - | - | Déposer dans casier |
+| Email Client | Taille | Poids | Code Retrait | Action |
+|--------------|--------|-------|--------------|--------|
+| demo@test.com | M | 2kg | - | Déposer dans casier |
 
 #### 4.2 Déposer dans le Casier
 
@@ -94,21 +108,21 @@ Client       : http://192.168.1.49:5000/client
 
 🔓 Le casier est ouvert, déposez le colis maintenant.
 
-📋 INFORMATIONS CLIENT :
+📋 CODE DE RETRAIT CLIENT :
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔑 Code Commande: CMD-20260326-1234
-🔐 Mot de Passe: A7K9P2
+🔑 3A7B2C9D
 
-💡 Ces informations sont à communiquer au client pour le retrait.
+💡 Ce code est à communiquer au client pour le retrait.
+(8 caractères: chiffres 0-9 et lettres A-D)
 ```
 
 5. ✅ Le tableau se met à jour :
 
-| Email Client | Taille | Poids | Code Commande | Mot de Passe | Action |
-|--------------|--------|-------|---------------|--------------|--------|
-| demo@test.com | M | 2kg | CMD-20260326-1234 | A7K9P2 | Voir Infos Client |
+| Email Client | Taille | Poids | Code Retrait | Action |
+|--------------|--------|-------|--------------|--------|
+| demo@test.com | M | 2kg | 3A7B2C9D | Voir Code Client |
 
-6. Cliquer **"Voir Infos Client"** pour réafficher les informations
+6. Cliquer **"Voir Code Client"** pour réafficher le code
 
 ---
 
@@ -116,11 +130,11 @@ Client       : http://192.168.1.49:5000/client
 
 1. Aller sur **http://192.168.1.49:5000/commercant**
 2. Rafraîchir la page (ou attendre 10 secondes)
-3. ✅ Code et mot de passe visibles dans le tableau :
+3. ✅ Code de retrait visible dans le tableau :
 
-| Email | Taille | Livreur | Statut | Code Commande | Mot de Passe | Actions |
-|-------|--------|---------|--------|---------------|--------------|---------|
-| demo@test.com | M | ilies khemissi | déposée | CMD-20260326-1234 | A7K9P2 | Infos Retrait |
+| Email | Taille | Livreur | Statut | Code Retrait | Actions |
+|-------|--------|---------|--------|--------------|---------|
+| demo@test.com | M | ilies khemissi | déposée | 3A7B2C9D | Infos Retrait |
 
 4. Cliquer **"Infos Retrait"** pour afficher la popup
 
@@ -129,9 +143,7 @@ Client       : http://192.168.1.49:5000/client
 ### ÉTAPE 6 : Retrait Client
 
 1. Aller sur **http://192.168.1.49:5000/client**
-2. Entrer :
-   - Code de commande : `CMD-20260326-1234`
-   - Mot de passe : `A7K9P2`
+2. Entrer le code de retrait : `3A7B2C9D`
 3. Cliquer **"Ouvrir le casier"**
 4. ✅ **LE CASIER S'OUVRE AUTOMATIQUEMENT** (GPIO 17)
 5. ✅ Message : "Casier ouvert ! Récupérez votre colis."

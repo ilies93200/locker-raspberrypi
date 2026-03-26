@@ -9,22 +9,18 @@ bp = Blueprint('client', __name__, url_prefix='/api/client')
 def retirer_commande():
     """Retirer une commande du casier (interface client kiosk)"""
     data = request.get_json()
-    code_commande = data.get('code_commande')
-    mot_de_passe = data.get('mot_de_passe')
+    code_retrait = data.get('code_retrait')
     
-    if not code_commande or not mot_de_passe:
-        return jsonify({'error': 'Code de commande et mot de passe requis'}), 400
+    if not code_retrait:
+        return jsonify({'error': 'Code de retrait requis'}), 400
     
-    commande = Commande.query.filter_by(code_commande=code_commande).first()
+    commande = Commande.query.filter_by(code_commande=code_retrait).first()
     
     if not commande:
-        return jsonify({'error': 'Numéro de commande inexistant'}), 404
+        return jsonify({'error': 'Code de retrait invalide'}), 404
     
     if commande.statut != 'déposée':
         return jsonify({'error': 'Cette commande n\'est pas disponible'}), 400
-    
-    if commande.mot_de_passe != mot_de_passe:
-        return jsonify({'error': 'Mot de passe incorrect'}), 401
     
     casier = Casier.query.get(1)
     if not casier or casier.etat != 'occupé':

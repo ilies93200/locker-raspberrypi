@@ -94,8 +94,7 @@ function afficherCommandesRecuperees(commandes) {
                     <th>Email Client</th>
                     <th>Taille</th>
                     <th>Poids</th>
-                    <th>Code Commande</th>
-                    <th>Mot de Passe</th>
+                    <th>Code Retrait</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -105,16 +104,15 @@ function afficherCommandesRecuperees(commandes) {
                         <td>${c.email_client}</td>
                         <td>${c.taille_casier}</td>
                         <td>${c.poids ? c.poids + ' kg' : '-'}</td>
-                        <td><strong>${c.code_commande || '-'}</strong></td>
-                        <td><strong>${c.mot_de_passe_client || '-'}</strong></td>
+                        <td><strong style="font-size: 18px; letter-spacing: 2px;">${c.code_commande || '-'}</strong></td>
                         <td>
-                            ${!c.code_commande ? `
+                            ${!c.code_commande || c.code_commande.startsWith('CMD-') ? `
                                 <button onclick="deposerCommande(${c.id})" class="btn btn-info">
                                     Déposer dans le casier
                                 </button>
                             ` : `
                                 <button onclick="afficherInfosClient(${c.id})" class="btn btn-success">
-                                    Voir Infos Client
+                                    Voir Code Client
                                 </button>
                             `}
                         </td>
@@ -171,12 +169,12 @@ async function deposerCommande(id) {
 
 🔓 Le casier est ouvert, déposez le colis maintenant.
 
-📋 INFORMATIONS CLIENT :
+📋 CODE DE RETRAIT CLIENT :
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔑 Code Commande: ${data.code_commande}
-🔐 Mot de Passe: ${data.mot_de_passe}
+🔑 ${data.code_retrait}
 
-💡 Ces informations sont à communiquer au client pour le retrait.
+💡 Ce code est à communiquer au client pour le retrait.
+(8 caractères: chiffres 0-9 et lettres A-D)
             `;
             alert(message);
             showAlert('✅ Commande déposée avec succès', 'success');
@@ -200,14 +198,14 @@ async function afficherInfosClient(id) {
         const commande = await response.json();
         
         const message = `
-📦 INFORMATIONS CLIENT
+📦 CODE DE RETRAIT CLIENT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 👤 Client: ${commande.email_client}
-🔑 Code Commande: ${commande.code_commande}
-🔐 Mot de Passe: ${commande.mot_de_passe_client}
+🔑 Code: ${commande.code_commande}
 
 📱 À communiquer au client pour le retrait
+(8 caractères: chiffres 0-9 et lettres A-D)
         `;
         
         alert(message);

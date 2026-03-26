@@ -9,16 +9,10 @@ import string
 
 bp = Blueprint('commandes', __name__, url_prefix='/api/commandes')
 
-def generer_code_commande():
-    """Génère un code de commande unique (ex: CMD-20240312-0042)"""
-    date_str = datetime.now().strftime('%Y%m%d')
-    random_num = random.randint(1000, 9999)
-    return f"CMD-{date_str}-{random_num}"
-
-def generer_mot_de_passe():
-    """Génère un mot de passe aléatoire (ex: 7K3mP9)"""
-    chars = string.ascii_uppercase + string.digits
-    return ''.join(random.choice(chars) for _ in range(6))
+def generer_code_retrait():
+    """Génère un code de retrait simple (8 caractères: 0-9, A-D)"""
+    chars = '0123456789ABCD'
+    return ''.join(random.choice(chars) for _ in range(8))
 
 @bp.route('', methods=['GET'])
 def get_commandes():
@@ -96,11 +90,10 @@ def deposer_commande(id):
     if casier.etat != 'libre':
         return jsonify({'error': 'Le casier est déjà occupé'}), 400
     
-    code_commande = generer_code_commande()
-    mot_de_passe = generer_mot_de_passe()
+    code_retrait = generer_code_retrait()
     
-    commande.code_commande = code_commande
-    commande.mot_de_passe = mot_de_passe
+    commande.code_commande = code_retrait
+    commande.mot_de_passe = None
     commande.statut = 'déposée'
     commande.date_depot = datetime.utcnow()
     
@@ -109,16 +102,15 @@ def deposer_commande(id):
     locker.ouvrir_casier(duree=5)
     
     try:
-        envoyer_email_client(commande.email_client, code_commande, mot_de_passe)
+        envoyer_email_client(commande.email_client, code_retrait, '')
     except Exception as e:
         print(f"⚠️ Erreur envoi email (non bloquant): {e}")
     
     db.session.commit()
     
     return jsonify({
-        'message': f'Commande déposée avec succès. Code: {code_commande}, Mot de passe: {mot_de_passe}',
-        'code_commande': code_commande,
-        'mot_de_passe': mot_de_passe,
+        'message': f'Commande déposée avec succès. Code de retrait: {code_retrait}',
+        'code_retrait': code_retrait,
         'commande': commande.to_dict()
     }), 200
 
