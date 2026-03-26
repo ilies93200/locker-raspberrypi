@@ -80,7 +80,7 @@ def certifier_recuperation(id):
 @jwt_required()
 def deposer_commande(id):
     """Déposer une commande dans le casier (action du livreur)"""
-    livreur_id = get_jwt_identity()
+    livreur_id = int(get_jwt_identity())
     
     commande = Commande.query.get(id)
     if not commande:
@@ -154,7 +154,7 @@ def delete_commande(id):
 @jwt_required()
 def get_commandes_disponibles():
     """Récupérer les commandes disponibles pour le livreur connecté"""
-    livreur_id = get_jwt_identity()
+    livreur_id = int(get_jwt_identity())
     
     commandes = Commande.query.filter(
         (Commande.statut == 'créée') | 

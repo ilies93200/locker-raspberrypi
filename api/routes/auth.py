@@ -23,7 +23,7 @@ def login():
     if not bcrypt.checkpw(password.encode('utf-8'), livreur.password.encode('utf-8')):
         return jsonify({'error': 'Login ou mot de passe incorrect'}), 401
     
-    access_token = create_access_token(identity=livreur.id)
+    access_token = create_access_token(identity=str(livreur.id))
     
     return jsonify({
         'access_token': access_token,
@@ -35,7 +35,7 @@ def login():
 @jwt_required()
 def change_password():
     """Changer le mot de passe (obligatoire au premier login)"""
-    livreur_id = get_jwt_identity()
+    livreur_id = int(get_jwt_identity())
     data = request.get_json()
     new_password = data.get('new_password')
     
@@ -58,7 +58,7 @@ def change_password():
 @jwt_required()
 def get_current_user():
     """Récupérer les infos du livreur connecté"""
-    livreur_id = get_jwt_identity()
+    livreur_id = int(get_jwt_identity())
     livreur = Livreur.query.get(livreur_id)
     
     if not livreur:
