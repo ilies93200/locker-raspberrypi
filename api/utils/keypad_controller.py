@@ -125,10 +125,6 @@ class KeypadController:
             # Valider le code
             if self.callback:
                 self.callback(self.buffer)
-        elif key in ['A', 'B', 'C', 'D']:
-            # Touches spéciales - peut être utilisé pour d'autres actions
-            if self.callback:
-                self.callback(f"SPECIAL_{key}")
         else:
             # Ajouter au buffer
             if len(self.buffer) < self.max_buffer_length:
