@@ -62,70 +62,56 @@ class KeypadController:
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
         
-        # Rangées en OUTPUT HIGH au repos
-        for pin in self.row_pins:
-            GPIO.setup(pin, GPIO.OUT)
-            GPIO.output(pin, GPIO.HIGH)
-        
-        # Colonnes en INPUT PULL-UP
-        for pin in self.col_pins:
+        # Tout en INPUT PULL-UP au repos (comme dans la calibration)
+        for pin in self.row_pins + self.col_pins:
             GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     
     def _scan_keypad(self):
         """
-        Scanne le clavier pour détecter une touche pressée
-        Retourne la touche pressée ou None
+        Scanne le clavier - même approche que la calibration
         """
         if not GPIO_AVAILABLE:
             return None
         
         for row_idx, row_pin in enumerate(self.row_pins):
-            # Mettre cette rangée à LOW, les autres restent HIGH
+            # Basculer en OUTPUT LOW
+            GPIO.setup(row_pin, GPIO.OUT)
             GPIO.output(row_pin, GPIO.LOW)
             time.sleep(0.002)
             
             for col_idx, col_pin in enumerate(self.col_pins):
                 if GPIO.input(col_pin) == GPIO.LOW:
-                    # Confirmation anti-rebond
                     time.sleep(0.005)
                     if GPIO.input(col_pin) == GPIO.LOW:
                         key = self.KEYS[row_idx][col_idx]
                         # Attendre relâchement
                         while GPIO.input(col_pin) == GPIO.LOW:
                             time.sleep(0.01)
-                        # Remettre la rangée à HIGH
-                        GPIO.output(row_pin, GPIO.HIGH)
+                        GPIO.setup(row_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
                         return key
             
-            # Remettre la rangée à HIGH avant la suivante
-            GPIO.output(row_pin, GPIO.HIGH)
+            GPIO.setup(row_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+            time.sleep(0.001)  # Laisser le pull-up se stabiliser
         
         return None
     
     def _scan_loop(self):
         """Boucle de scan en arrière-plan"""
-        debounce_time = 0.8  # Debounce plus long
+        # _scan_keypad attend déjà le relâchement, donc pas besoin
+        # de gestion complexe - juste un anti-rebond simple
         last_press_time = 0
-        last_key = None
-        key_released = True  # Nouveau: s'assurer que la touche est relâchée
+        debounce_time = 0.2
         
         while self.running:
             key = self._scan_keypad()
             
             if key:
                 current_time = time.time()
-                # Seulement si la touche précédente a été relâchée
-                if key_released and current_time - last_press_time > debounce_time:
+                if current_time - last_press_time > debounce_time:
                     self._handle_key_press(key)
                     last_press_time = current_time
-                    last_key = key
-                    key_released = False
-            else:
-                # Aucune touche pressée = touche relâchée
-                key_released = True
-                last_key = None
             
-            time.sleep(0.05)  # Délai plus long entre les scans
+            time.sleep(0.01)
     
     def _handle_key_press(self, key):
         """Gère une touche pressée"""
