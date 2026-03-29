@@ -60,9 +60,15 @@ class KeypadController:
     def _setup_gpio(self):
         """Configure les GPIO pour le clavier matriciel"""
         GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(False)
         
-        # Configurer toutes les pins en INPUT PULL-UP au repos
-        for pin in self.row_pins + self.col_pins:
+        # Rangées en OUTPUT HIGH au repos
+        for pin in self.row_pins:
+            GPIO.setup(pin, GPIO.OUT)
+            GPIO.output(pin, GPIO.HIGH)
+        
+        # Colonnes en INPUT PULL-UP
+        for pin in self.col_pins:
             GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     
     def _scan_keypad(self):
@@ -73,32 +79,26 @@ class KeypadController:
         if not GPIO_AVAILABLE:
             return None
         
-        detected_key = None
-        
         for row_idx, row_pin in enumerate(self.row_pins):
-            # Mettre la rangée en OUTPUT LOW
-            GPIO.setup(row_pin, GPIO.OUT)
+            # Mettre cette rangée à LOW, les autres restent HIGH
             GPIO.output(row_pin, GPIO.LOW)
-            time.sleep(0.001)  # Petit délai pour stabiliser
+            time.sleep(0.002)
             
-            # Vérifier chaque colonne
             for col_idx, col_pin in enumerate(self.col_pins):
                 if GPIO.input(col_pin) == GPIO.LOW:
-                    # Vérifier deux fois pour confirmer
+                    # Confirmation anti-rebond
                     time.sleep(0.005)
                     if GPIO.input(col_pin) == GPIO.LOW:
-                        detected_key = self.KEYS[row_idx][col_idx]
-                        
-                        # Attendre que la touche soit relâchée
+                        key = self.KEYS[row_idx][col_idx]
+                        # Attendre relâchement
                         while GPIO.input(col_pin) == GPIO.LOW:
                             time.sleep(0.01)
-                        
-                        # Remettre la rangée en INPUT PULL-UP
-                        GPIO.setup(row_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-                        return detected_key
+                        # Remettre la rangée à HIGH
+                        GPIO.output(row_pin, GPIO.HIGH)
+                        return key
             
-            # Remettre la rangée en INPUT PULL-UP
-            GPIO.setup(row_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+            # Remettre la rangée à HIGH avant la suivante
+            GPIO.output(row_pin, GPIO.HIGH)
         
         return None
     
