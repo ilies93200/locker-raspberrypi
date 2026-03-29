@@ -69,4 +69,4 @@ if __name__ == '__main__':
     print(f"   - IHM Commerçant: http://192.168.1.116:5000/commercant")
     print(f"   - App Livreur: http://192.168.1.116:5000/livreur")
     print(f"   - Client Kiosk: http://192.168.1.116:5000/client")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=False)
