@@ -54,10 +54,13 @@ with app.app_context():
     db.create_all()
     print("✅ Base de données initialisée")
     
-    # Démarrer le kiosk avec clavier
-    kiosk = get_kiosk()
-    kiosk.start()
-    print("✅ Kiosk client actif - Clavier en écoute")
+    # Démarrer le kiosk uniquement dans le processus principal
+    # (éviter le double démarrage en mode debug Flask)
+    import os
+    if os.environ.get('WERKZEUG_RUN_MAIN') == 'true' or not app.debug:
+        kiosk = get_kiosk()
+        kiosk.start()
+        print("✅ Kiosk client actif - Clavier en écoute")
 
 if __name__ == '__main__':
     print("🚀 Démarrage du serveur Locker...")
