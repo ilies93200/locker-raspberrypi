@@ -12,29 +12,37 @@ class LockerController:
     def __init__(self, pin=17):
         self.pin = pin
         self.is_locked = True
+        self.relay_active_low = True
+        self.default_open_duration = 2
         
         if GPIO_AVAILABLE:
             GPIO.setmode(GPIO.BCM)
             GPIO.setup(self.pin, GPIO.OUT)
             GPIO.output(self.pin, GPIO.HIGH)
-            print(f"✅ GPIO initialisé - Pin {self.pin} (verrouillé)")
+            print(f"✅ GPIO initialisé - Pin {self.pin} (relais actif LOW, verrouillé)")
         else:
-            print(f"🔧 Mode simulation - Pin {self.pin} (verrouillé)")
+            print(f"🔧 Mode simulation - Pin {self.pin} (relais actif LOW, verrouillé)")
     
-    def ouvrir_casier(self, duree=5):
+    def ouvrir_casier(self, duree=2):
         """
-        Déverrouille le casier pendant 'duree' secondes
+        Déverrouille le casier pendant 'duree' secondes.
+
+        Le relais est actif à LOW :
+        - GPIO HIGH = repos / serrure coupée
+        - GPIO LOW = relais activé / serrure alimentée
         
         Args:
-            duree (int): Durée d'ouverture en secondes (défaut: 5)
+            duree (int): Durée d'ouverture en secondes (défaut: 2)
         
         Returns:
             bool: True si succès, False sinon
         """
         try:
+            duree = max(1, min(int(duree), 3))
+
             if GPIO_AVAILABLE:
                 GPIO.output(self.pin, GPIO.LOW)
-                print(f"🔓 Casier déverrouillé (GPIO {self.pin} → LOW)")
+                print(f"🔓 Casier déverrouillé (GPIO {self.pin} → LOW, {duree}s)")
             else:
                 print(f"🔓 [SIMULATION] Casier déverrouillé pendant {duree}s")
             
@@ -59,7 +67,7 @@ class LockerController:
         if GPIO_AVAILABLE:
             GPIO.output(self.pin, GPIO.HIGH)
         self.is_locked = True
-        print(f"🔒 Casier verrouillé")
+        print(f"🔒 Casier verrouillé (GPIO {self.pin} → HIGH)")
     
     def get_etat(self):
         """Retourne l'état actuel du casier"""

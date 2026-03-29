@@ -26,7 +26,7 @@ def retirer_commande():
     if not casier or casier.etat != 'occupé':
         return jsonify({'error': 'Le casier est vide'}), 400
     
-    locker.ouvrir_casier(duree=5)
+    locker.ouvrir_casier(duree=2)
     
     commande.statut = 'récupérée_par_client'
     commande.date_retrait = datetime.utcnow()

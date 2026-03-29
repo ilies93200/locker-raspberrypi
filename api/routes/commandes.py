@@ -99,7 +99,7 @@ def deposer_commande(id):
     
     casier.etat = 'occupé'
     
-    locker.ouvrir_casier(duree=5)
+    locker.ouvrir_casier(duree=2)
     
     try:
         envoyer_email_client(commande.email_client, code_retrait, '')
