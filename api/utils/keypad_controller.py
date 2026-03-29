@@ -73,25 +73,29 @@ class KeypadController:
         if not GPIO_AVAILABLE:
             return None
         
+        detected_key = None
+        
         for row_idx, row_pin in enumerate(self.row_pins):
             # Mettre la rangée en OUTPUT LOW
             GPIO.setup(row_pin, GPIO.OUT)
             GPIO.output(row_pin, GPIO.LOW)
+            time.sleep(0.001)  # Petit délai pour stabiliser
             
             # Vérifier chaque colonne
             for col_idx, col_pin in enumerate(self.col_pins):
                 if GPIO.input(col_pin) == GPIO.LOW:
-                    # Touche détectée!
-                    key = self.KEYS[row_idx][col_idx]
-                    
-                    # Attendre que la touche soit relâchée (debounce)
-                    time.sleep(0.05)
-                    while GPIO.input(col_pin) == GPIO.LOW:
-                        time.sleep(0.01)
-                    
-                    # Remettre la rangée en INPUT PULL-UP
-                    GPIO.setup(row_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-                    return key
+                    # Vérifier deux fois pour confirmer
+                    time.sleep(0.005)
+                    if GPIO.input(col_pin) == GPIO.LOW:
+                        detected_key = self.KEYS[row_idx][col_idx]
+                        
+                        # Attendre que la touche soit relâchée
+                        while GPIO.input(col_pin) == GPIO.LOW:
+                            time.sleep(0.01)
+                        
+                        # Remettre la rangée en INPUT PULL-UP
+                        GPIO.setup(row_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+                        return detected_key
             
             # Remettre la rangée en INPUT PULL-UP
             GPIO.setup(row_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
