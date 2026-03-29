@@ -100,23 +100,26 @@ class KeypadController:
     
     def _scan_loop(self):
         """Boucle de scan en arrière-plan"""
-        last_key = None
-        debounce_time = 0.3
+        debounce_time = 0.5  # Augmenté pour éviter les doubles détections
         last_press_time = 0
+        last_key = None
         
         while self.running:
             key = self._scan_keypad()
             
-            if key and key != last_key:
+            if key:
                 current_time = time.time()
-                if current_time - last_press_time > debounce_time:
-                    self._handle_key_press(key)
-                    last_press_time = current_time
-                    last_key = key
-            elif not key:
+                # Ignorer si même touche pressée trop rapidement
+                if key == last_key and current_time - last_press_time < debounce_time:
+                    continue
+                
+                self._handle_key_press(key)
+                last_press_time = current_time
+                last_key = key
+            else:
                 last_key = None
             
-            time.sleep(0.01)
+            time.sleep(0.02)  # Petit délai entre les scans
     
     def _handle_key_press(self, key):
         """Gère une touche pressée"""
