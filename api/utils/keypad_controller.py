@@ -42,7 +42,7 @@ class KeypadController:
             col_pins: Liste des pins GPIO pour les colonnes (défaut: [12, 16, 20, 21])
         """
         # Pins selon ton câblage (GPIO 17 = relais, donc on utilise d'autres pins)
-        self.row_pins = row_pins or [19, 13, 6, 5]
+        self.row_pins = row_pins or [5, 6, 13, 19]
         self.col_pins = col_pins or [12, 16, 20, 21]
         
         self.buffer = ""
