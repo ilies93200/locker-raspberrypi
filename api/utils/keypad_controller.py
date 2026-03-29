@@ -61,13 +61,8 @@ class KeypadController:
         """Configure les GPIO pour le clavier matriciel"""
         GPIO.setmode(GPIO.BCM)
         
-        # Configurer les rangées en sortie (HIGH par défaut)
-        for pin in self.row_pins:
-            GPIO.setup(pin, GPIO.OUT)
-            GPIO.output(pin, GPIO.HIGH)
-        
-        # Configurer les colonnes en entrée avec pull-up
-        for pin in self.col_pins:
+        # Configurer toutes les pins en INPUT PULL-UP au repos
+        for pin in self.row_pins + self.col_pins:
             GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     
     def _scan_keypad(self):
@@ -79,7 +74,8 @@ class KeypadController:
             return None
         
         for row_idx, row_pin in enumerate(self.row_pins):
-            # Mettre la rangée à LOW
+            # Mettre la rangée en OUTPUT LOW
+            GPIO.setup(row_pin, GPIO.OUT)
             GPIO.output(row_pin, GPIO.LOW)
             
             # Vérifier chaque colonne
@@ -93,12 +89,12 @@ class KeypadController:
                     while GPIO.input(col_pin) == GPIO.LOW:
                         time.sleep(0.01)
                     
-                    # Remettre la rangée à HIGH
-                    GPIO.output(row_pin, GPIO.HIGH)
+                    # Remettre la rangée en INPUT PULL-UP
+                    GPIO.setup(row_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
                     return key
             
-            # Remettre la rangée à HIGH
-            GPIO.output(row_pin, GPIO.HIGH)
+            # Remettre la rangée en INPUT PULL-UP
+            GPIO.setup(row_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         
         return None
     
