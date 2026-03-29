@@ -30,9 +30,9 @@ def test_keypad():
     print("🧪 TEST DU CLAVIER MATRICIEL 4x4")
     print("=" * 50)
     print()
-    print("CÂBLAGE PAR DÉFAUT:")
-    print("  Rangées (ROW): GPIO 5, 6, 13, 19")
-    print("  Colonnes (COL): GPIO 12, 16, 20, 21")
+    print("CÂBLAGE:")
+    print("  Rangées (ROW): GPIO 17, 18, 27, 22")
+    print("  Colonnes (COL): GPIO 23, 24, 25, 4")
     print()
     print("LAYOUT:")
     print("  [1] [2] [3] [A]")
@@ -83,8 +83,8 @@ def test_pins():
         import RPi.GPIO as GPIO
         GPIO.setmode(GPIO.BCM)
         
-        row_pins = [5, 6, 13, 19]
-        col_pins = [12, 16, 20, 21]
+        row_pins = [17, 18, 27, 22]
+        col_pins = [23, 24, 25, 4]
         
         print("\nConfiguration des rangées (OUTPUT):")
         for pin in row_pins:
