@@ -3,6 +3,7 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from api.config import Config
 from api.models import db
+from api.utils.locker_kiosk import init_kiosk, get_kiosk
 import os
 
 app = Flask(__name__, 
@@ -21,6 +22,9 @@ app.register_blueprint(commandes.bp)
 app.register_blueprint(livreurs.bp)
 app.register_blueprint(casiers.bp)
 app.register_blueprint(client.bp)
+
+# Initialiser le kiosk avec clavier
+init_kiosk(app)
 
 @app.route('/')
 def index():
@@ -49,6 +53,11 @@ def client_kiosk():
 with app.app_context():
     db.create_all()
     print("✅ Base de données initialisée")
+    
+    # Démarrer le kiosk avec clavier
+    kiosk = get_kiosk()
+    kiosk.start()
+    print("✅ Kiosk client actif - Clavier en écoute")
 
 if __name__ == '__main__':
     print("🚀 Démarrage du serveur Locker...")

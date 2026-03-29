@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from api.models import db, Commande, Casier
 from api.utils.gpio_controller import locker
+from api.utils.locker_kiosk import get_kiosk
 from datetime import datetime
 
 bp = Blueprint('client', __name__, url_prefix='/api/client')
@@ -38,3 +39,18 @@ def retirer_commande():
         'message': 'Casier ouvert ! Récupérez votre colis.',
         'commande': commande.to_dict()
     }), 200
+
+
+@bp.route('/kiosk/status', methods=['GET'])
+def kiosk_status():
+    """Retourne le statut du kiosk (buffer clavier, dernier code, dernier résultat)"""
+    kiosk = get_kiosk()
+    return jsonify(kiosk.get_status()), 200
+
+
+@bp.route('/kiosk/clear', methods=['POST'])
+def kiosk_clear():
+    """Efface le buffer du clavier et les derniers résultats"""
+    kiosk = get_kiosk()
+    kiosk.clear()
+    return jsonify({'message': 'Buffer effacé'}), 200
