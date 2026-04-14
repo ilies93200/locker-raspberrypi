@@ -12,24 +12,24 @@ class LockerController:
     def __init__(self, pin=17):
         self.pin = pin
         self.is_locked = True
-        self.relay_active_high = True
         self.default_open_duration = 2
         
         if GPIO_AVAILABLE:
             GPIO.setmode(GPIO.BCM)
             GPIO.setup(self.pin, GPIO.OUT)
-            GPIO.output(self.pin, GPIO.LOW)  # LOW = relais OFF = serrure non alimentée = pas de chauffe
-            print(f"✅ GPIO initialisé - Pin {self.pin} (relais actif HIGH, verrouillé)")
+            # Serrure fail-safe : HIGH = relais ON = serrure alimentée = FERMÉE
+            GPIO.output(self.pin, GPIO.HIGH)
+            print(f"✅ GPIO initialisé - Pin {self.pin} (serrure fail-safe, verrouillée)")
         else:
-            print(f"🔧 Mode simulation - Pin {self.pin} (relais actif HIGH, verrouillé)")
+            print(f"🔧 Mode simulation - Pin {self.pin} (serrure fail-safe, verrouillée)")
     
     def ouvrir_casier(self, duree=2):
         """
         Déverrouille le casier pendant 'duree' secondes.
 
-        Le relais est actif à HIGH :
-        - GPIO LOW  = repos / serrure NON alimentée (pas de chauffe)
-        - GPIO HIGH = relais activé / serrure alimentée pendant duree secondes
+        Serrure fail-safe (alimentation continue) :
+        - GPIO HIGH = relais ON = serrure alimentée = FERMÉE (état normal)
+        - GPIO LOW  = relais OFF = serrure sans courant = OUVERTE (pendant duree secondes)
         
         Args:
             duree (int): Durée d'ouverture en secondes (défaut: 2)
@@ -38,11 +38,11 @@ class LockerController:
             bool: True si succès, False sinon
         """
         try:
-            duree = max(1, min(int(duree), 3))
+            duree = max(1, min(int(duree), 5))
 
             if GPIO_AVAILABLE:
-                GPIO.output(self.pin, GPIO.HIGH)
-                print(f"🔓 Casier déverrouillé (GPIO {self.pin} → HIGH, {duree}s)")
+                GPIO.output(self.pin, GPIO.LOW)
+                print(f"🔓 Casier ouvert (GPIO {self.pin} → LOW, courant coupé, {duree}s)")
             else:
                 print(f"🔓 [SIMULATION] Casier déverrouillé pendant {duree}s")
             
@@ -50,8 +50,8 @@ class LockerController:
             time.sleep(duree)
             
             if GPIO_AVAILABLE:
-                GPIO.output(self.pin, GPIO.LOW)
-                print(f"🔒 Casier reverrouillé (GPIO {self.pin} → LOW)")
+                GPIO.output(self.pin, GPIO.HIGH)
+                print(f"🔒 Casier verrouillé (GPIO {self.pin} → HIGH, serrure alimentée)")
             else:
                 print(f"🔒 [SIMULATION] Casier reverrouillé")
             
@@ -65,9 +65,9 @@ class LockerController:
     def verrouiller(self):
         """Force le verrouillage du casier"""
         if GPIO_AVAILABLE:
-            GPIO.output(self.pin, GPIO.LOW)
+            GPIO.output(self.pin, GPIO.HIGH)
         self.is_locked = True
-        print(f"🔒 Casier verrouillé (GPIO {self.pin} → LOW)")
+        print(f"🔒 Casier verrouillé (GPIO {self.pin} → HIGH)")
     
     def get_etat(self):
         """Retourne l'état actuel du casier"""
