@@ -38,7 +38,7 @@ class LockerController:
             bool: True si succès, False sinon
         """
         try:
-            duree = max(1, min(int(duree), 5))
+            duree = max(1, min(int(duree), 3))
 
             if GPIO_AVAILABLE:
                 GPIO.output(self.pin, GPIO.LOW)
